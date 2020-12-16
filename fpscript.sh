@@ -15,7 +15,8 @@ read -n 1 -srp "Press any key to continue..."
 
 mkdir fpscript
 cd fpscript
-workingdir=$(pwd)
+# escape directory for spaces
+workingdir=$(printf "%q\n" "$(pwd)")   
 
 # Get latest links from separate script
 wget https://raw.githubusercontent.com/j0lol/fpscript/main/links.sh
