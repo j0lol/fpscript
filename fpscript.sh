@@ -10,31 +10,31 @@ echo "At the moment, these appear to be:"
 echo "git (and other essential build tools), npm, 7z, php, wine (32 bit)"
 echo
 read -n 1 -srp "Press any key to continue..."
-
 # Make our working directory
 
 mkdir fpscript
 cd fpscript
 # escape directory for spaces
-workingdir=$(printf "%q\n" "$(pwd)")   
+workingdir="${PWD:-$(pwd)}"
 
 # Get latest links from separate script
 wget https://raw.githubusercontent.com/j0lol/fpscript/main/links.sh
-source links.sh
+. ./links.sh
 rm links.sh
 
 # Part 1: Get Flashpoint.exe
 mkdir win-dl
 cd win-dl
 
-wget $FPDOWNLOAD
+wget "$FPDOWNLOAD"
 7z x Flashpoint*.exe # Extract self-extracting archive
-mv Flashpoint*/* . 
-rm -r Flashpoint*
-rm -rf Launcher #Remove windows build to be replaced w linux build
+for x in Flashpoint*; do case "$x" in *.exe) :;; *) dir="$x"; esac; done
+mv "$dir"/* ./
+rm -r "$dir"
+rm -rf Launcher # Remove windows build to be replaced w linux build
 mkdir Launcher
 
-cd $workingdir
+cd "$workingdir"
 
 # Part 2: Build Flashpoint Launcher
 
@@ -46,9 +46,9 @@ npm run build # Build
 npm run pack # Pack for release
 
 cd dist/linux-unpacked
-mv * $workingdir/win-dl/Launcher/ # Copy into our flashpoint infinity folder
+mv * "$workingdir"/win-dl/Launcher/ # Copy into our flashpoint infinity folder
 
-cd $workingdir
+cd "$workingdir"
 
 # Part 3: Overwrite files w patches/config changes
 cd win-dl
@@ -57,9 +57,9 @@ unzip conf.zip
 rm conf.zip
 
 # Part 4: Cleanup
-cd $workingdir
+cd "$workingdir"
 rm -rf launcher
-mv win-dl/* .
+mv win-dl/* ./
 rm -r win-dl
 rm *.lnk
 echo "Run Launcher/flashpoint-launcher to run Flashpoint. PHP and Wine is needed to run games." > linux-howtorun.txt
